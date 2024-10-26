@@ -156,39 +156,6 @@ class DES:
                 ans = ans + "1"
         return ans
     
-    # def encrypt(self, pt, rkb, rk):
-    #     pt = self.permute(pt, self.initial_perm, 64)
-    #     print(f"After Initial Permutation: {pt}")
-        
-    #     left = pt[0:32]
-    #     right = pt[32:64]
-        
-    #     for i in range(16):
-    #         right_expanded = self.permute(right, self.exp_d, 48)
-            
-    #         xor_x = self.xor(right_expanded, rkb[i])
-            
-    #         sbox_str = ""
-    #         for j in range(8):
-    #             row = int(xor_x[j * 6] + xor_x[j * 6 + 5], 2)
-    #             col = int(xor_x[j * 6 + 1:j * 6 + 5], 2)
-    #             val = self.sbox[j][row][col]
-    #             sbox_str += self.dec2bin(val)
-            
-    #         sbox_str = self.permute(sbox_str, self.per, 32)
-            
-    #         result = self.xor(left, sbox_str)
-    #         left = result
-            
-    #         if i != 15:
-    #             left, right = right, left
-    #         print(f"Round {i+1}: {self.bin2hex(left)} {self.bin2hex(right)} {rk[i]}")
-        
-    #     combine = left + right
-        
-    #     cipher_text = self.permute(combine, self.final_perm, 64)
-    #     return cipher_text
-    
     def generate_keys(self, key):
         key = self.permute(key, self.keyp, 56)
         
@@ -208,43 +175,8 @@ class DES:
             rkb.append(round_key)
             rk.append(self.bin2hex(round_key))  
         return rkb, rk
-    
-    # def decrypt(self, ct, rkb_rev, rk_rev):
-    #     ct = self.permute(ct, self.initial_perm, 64)
-    #     print(f"Setelah Initial Permutation: {self.bin2hex(ct)}")
-        
-    #     left = ct[0:32]
-    #     right = ct[32:64]
-        
-    #     for i in range(16):
-    #         right_expanded = self.permute(right, self.exp_d, 48)
-            
-    #         xor_x = self.xor(right_expanded, rkb_rev[i])
-            
-    #         sbox_str = ""
-    #         for j in range(8):
-    #             row = int(xor_x[j * 6] + xor_x[j * 6 + 5], 2)  
-    #             col = int(xor_x[j * 6 + 1:j * 6 + 5], 2)
-    #             val = self.sbox[j][row][col]
-    #             sbox_str += self.dec2bin(val)
-            
-    #         sbox_str = self.permute(sbox_str, self.per, 32)
-            
-    #         result = self.xor(left, sbox_str)
-    #         left = result
-            
-    #         if i != 15:
-    #             left, right = right, left
-    #         print(f"Round {i+1}: {self.bin2hex(left)} {self.bin2hex(right)} {rk_rev[i]}")
-        
-    #     combine = left + right
-        
-    #     plain_text = self.permute(combine, self.final_perm, 64)
-    #     return plain_text
-        
 
     def encrypt_block(self, pt, rkb, rk):
-        # Implementasi enkripsi per blok 64-bit, sesuai dengan kode yang Anda miliki sebelumnya
         pt = self.permute(pt, self.initial_perm, 64)
         
         left = pt[0:32]
@@ -273,12 +205,10 @@ class DES:
         return cipher_text
 
     def encrypt(self, pt, rkb, rk):
-        # Bagi plaintext menjadi blok-blok 64-bit (8 karakter per blok)
         blocks = [pt[i:i + 64] for i in range(0, len(pt), 64)]
         cipher_text = ""
         
         for block in blocks:
-            # Jika panjang blok kurang dari 64-bit, tambahkan padding (misalnya dengan karakter '0')
             if len(block) < 64:
                 block = block.ljust(64, '0')
             
@@ -287,7 +217,6 @@ class DES:
         return cipher_text
 
     def decrypt_block(self, ct, rkb_rev, rk_rev):
-        # Implementasi dekripsi per blok 64-bit, sesuai dengan kode yang Anda miliki sebelumnya
         ct = self.permute(ct, self.initial_perm, 64)
         
         left = ct[0:32]
@@ -316,14 +245,10 @@ class DES:
         return plain_text
 
     def decrypt(self, ct, rkb_rev, rk_rev):
-        # Bagi ciphertext menjadi blok-blok 64-bit
         blocks = [ct[i:i + 64] for i in range(0, len(ct), 64)]
         plain_text = ""
         
         for block in blocks:
-            # Dekripsi setiap blok
             plain_text += self.decrypt_block(block, rkb_rev, rk_rev)
         
-        return plain_text.rstrip('0')  # Hapus padding setelah dekripsi
-    
-
+        return plain_text.rstrip('0')
